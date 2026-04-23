@@ -82,41 +82,50 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 });
 
 // ========================================
-// Form submission
+// Form submission + validation
 // ========================================
 const form = document.querySelector('.request-form');
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+form.addEventListener('submit', (e) => {
+  const requiredFields = form.querySelectorAll('[required]');
+  let firstInvalid = null;
+
+  requiredFields.forEach((field) => {
+    const group = field.closest('.form-group');
+    const existing = group.querySelector('.error-msg');
+    if (existing) existing.remove();
+
+    if (!field.value.trim()) {
+      e.preventDefault();
+      field.style.borderColor = '#EF4444';
+      const msg = document.createElement('span');
+      msg.className = 'error-msg';
+      msg.textContent = 'This field is required';
+      msg.style.color = '#EF4444';
+      msg.style.fontSize = '0.8rem';
+      msg.style.marginTop = '4px';
+      group.appendChild(msg);
+      if (!firstInvalid) firstInvalid = field;
+    } else {
+      field.style.borderColor = '';
+    }
+  });
+
+  if (firstInvalid) {
+    firstInvalid.focus();
+    return;
+  }
 
   const submitBtn = form.querySelector('.btn-submit');
-  const originalText = submitBtn.innerHTML;
   submitBtn.innerHTML = 'Sending...';
   submitBtn.disabled = true;
+});
 
-  const formData = new FormData(form);
-
-  try {
-    const response = await fetch(form.action, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (response.ok) {
-      submitBtn.innerHTML = '✓ Pitch Received!';
-      submitBtn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
-      form.reset();
-      setTimeout(() => {
-        submitBtn.innerHTML = originalText;
-        submitBtn.style.background = '';
-        submitBtn.disabled = false;
-      }, 3000);
-    } else {
-      throw new Error('Form submission failed');
-    }
-  } catch {
-    // Fallback: submit normally (FormSubmit will handle the redirect)
-    form.submit();
-  }
+// Clear error on input
+form.querySelectorAll('[required]').forEach((field) => {
+  field.addEventListener('input', () => {
+    field.style.borderColor = '';
+    const msg = field.closest('.form-group').querySelector('.error-msg');
+    if (msg) msg.remove();
+  });
 });

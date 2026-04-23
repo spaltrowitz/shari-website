@@ -718,6 +718,21 @@ img {
   color: var(--gray-400);
 }
 
+.required {
+  color: #EF4444;
+  font-weight: 700;
+}
+
+.form-group input:invalid:not(:placeholder-shown),
+.form-group textarea:invalid:not(:placeholder-shown) {
+  border-color: #EF4444;
+}
+
+.form-group input:invalid:not(:placeholder-shown) ~ .error-msg,
+.form-group textarea:invalid:not(:placeholder-shown) ~ .error-msg {
+  display: block;
+}
+
 .form-group input,
 .form-group textarea {
   font-family: var(--font-body);
