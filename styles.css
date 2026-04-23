@@ -1105,6 +1105,10 @@ img {
     flex-direction: column;
     gap: 8px;
   }
+
+  .footer-logo {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
