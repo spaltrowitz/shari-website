@@ -99,7 +99,7 @@ adjustProjectCards();
 window.addEventListener('resize', adjustProjectCards);
 
 // ========================================
-// Form submission + validation
+// Form submission + validation (App Pitch form)
 // ========================================
 const form = document.querySelector('.request-form');
 
@@ -144,5 +144,35 @@ form.querySelectorAll('[required]').forEach((field) => {
     field.style.borderColor = '';
     const msg = field.closest('.form-group').querySelector('.error-msg');
     if (msg) msg.remove();
+  });
+});
+
+// ========================================
+// Early access form submission
+// ========================================
+const earlyAccessForm = document.querySelector('.early-access-form');
+
+earlyAccessForm.addEventListener('submit', (e) => {
+  const select = earlyAccessForm.querySelector('select');
+  const email = earlyAccessForm.querySelector('input[type="email"]');
+
+  if (!select.value || !email.value.trim()) {
+    e.preventDefault();
+    if (!select.value) select.style.borderColor = '#EF4444';
+    if (!email.value.trim()) email.style.borderColor = '#EF4444';
+    return;
+  }
+
+  const btn = earlyAccessForm.querySelector('.btn-early-access');
+  btn.innerHTML = 'Sending...';
+  btn.disabled = true;
+});
+
+earlyAccessForm.querySelectorAll('select, input').forEach((field) => {
+  field.addEventListener('input', () => {
+    field.style.borderColor = '';
+  });
+  field.addEventListener('change', () => {
+    field.style.borderColor = '';
   });
 });
