@@ -927,6 +927,63 @@ img {
   font-size: 1rem;
 }
 
+/* GitHub Pitch Option */
+.github-pitch {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.github-pitch-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.github-pitch-divider::before,
+.github-pitch-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.github-pitch-divider span {
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background: var(--gray-800);
+  color: var(--white);
+  border-radius: var(--radius-xl);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-github:hover {
+  background: var(--gray-900);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.github-pitch-note {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--gray-400);
+}
+
 /* ========================================
    Footer
    ======================================== */

@@ -1,0 +1,123 @@
+name: Create PR from App Pitch
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  create-pitch-pr:
+    if: contains(github.event.issue.labels.*.name, 'app-pitch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create pitch file and open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: |
+          # Parse fields from the issue form body
+          get_field() {
+            local label="$1"
+            echo "$ISSUE_BODY" | awk -v header="### $label" '
+              $0 == header { found=1; next }
+              found && /^### / { exit }
+              found && /^_No response_$/ { next }
+              found { print }
+            ' | sed -e '/^$/d' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+          }
+
+          NAME=$(get_field "Your Name")
+          EMAIL=$(get_field "Contact Email")
+          APP_NAME=$(get_field "App Name")
+          PROBLEM=$(get_field "What problem does it solve?")
+          AUDIENCE=$(get_field "Who is it for?")
+          FEATURES=$(get_field "Key Features (top 3)")
+          URGENCY=$(get_field "How urgent is this?")
+          DETAILS=$(get_field "Additional Details")
+
+          # Create a URL-safe slug from the app name (or issue number as fallback)
+          if [ -n "$APP_NAME" ]; then
+            SLUG=$(echo "$APP_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+          else
+            SLUG="pitch"
+          fi
+          BRANCH="pitch/${ISSUE_NUMBER}-${SLUG}"
+          FILENAME="pitches/${ISSUE_NUMBER}-${SLUG}.md"
+          DATE=$(date -u +"%Y-%m-%d")
+
+          # Create branch
+          git checkout -b "$BRANCH"
+
+          # Create pitches directory if it doesn't exist
+          mkdir -p pitches
+
+          # Write the pitch markdown file
+          cat > "$FILENAME" << EOF
+          # ${APP_NAME:-Untitled Pitch}
+
+          | | |
+          |---|---|
+          | **Submitted by** | ${NAME} (${EMAIL}) |
+          | **GitHub Issue** | #${ISSUE_NUMBER} |
+          | **Date** | ${DATE} |
+          | **Urgency** | ${URGENCY:-Not specified} |
+
+          ## Problem
+
+          ${PROBLEM:-No description provided.}
+
+          ## Target Audience
+
+          ${AUDIENCE:-Not specified.}
+
+          ## Key Features
+
+          ${FEATURES:-Not specified.}
+
+          ## Additional Details
+
+          ${DETAILS:-None.}
+          EOF
+
+          # Clean up leading whitespace from heredoc indentation
+          sed -i 's/^          //' "$FILENAME"
+
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILENAME"
+          git commit -m "Add app pitch: ${APP_NAME:-#${ISSUE_NUMBER}}"
+          git push origin "$BRANCH"
+
+          # Create PR
+          PR_URL=$(gh pr create \
+            --title "App Pitch: ${APP_NAME:-#${ISSUE_NUMBER}}" \
+            --body "## New App Pitch from ${NAME}
+
+          Submitted via issue #${ISSUE_NUMBER}.
+
+          **Problem:** ${PROBLEM}
+
+          **Audience:** ${AUDIENCE:-Not specified}
+
+          **Urgency:** ${URGENCY:-Not specified}
+
+          ---
+          Review this pitch and merge to accept it into the backlog." \
+            --base main \
+            --head "$BRANCH")
+
+          echo "PR created: $PR_URL"
+
+          # Comment on the issue linking to the PR
+          gh issue comment "$ISSUE_NUMBER" \
+            --body "Thanks for the pitch! I created a PR for review: ${PR_URL}"

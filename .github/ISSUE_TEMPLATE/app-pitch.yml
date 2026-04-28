@@ -1,0 +1,65 @@
+name: "🚀 App Pitch"
+description: "Pitch me an app idea"
+title: "App Pitch: "
+labels: ["app-pitch"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Your Name
+      placeholder: "Who are you?"
+    validations:
+      required: true
+
+  - type: input
+    id: email
+    attributes:
+      label: Contact Email
+      placeholder: "so I can follow up"
+    validations:
+      required: true
+
+  - type: input
+    id: app-name
+    attributes:
+      label: App Name
+      description: "Or working title"
+      placeholder: "What do you want to call it?"
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      placeholder: "Describe the pain point in a sentence or two..."
+    validations:
+      required: true
+
+  - type: input
+    id: audience
+    attributes:
+      label: Who is it for?
+      placeholder: "e.g., College students, busy parents, dog owners..."
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Key Features (top 3)
+      placeholder: |
+        1.
+        2.
+        3.
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: How urgent is this?
+      options:
+        - "💭 Just an idea"
+        - "🚀 Ready to build"
+        - "🔥 I have a deadline"
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Additional Details
+      placeholder: "Anything else I should know? Inspiration, examples, technical preferences, timeline..."
