@@ -175,6 +175,17 @@ body {
     transform: translateX(5px);
 }
 
+.work-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
 .expertise-layout {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
